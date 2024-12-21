@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "281027583126",
+    "project_id": "khat-dacb2",
+    "storage_bucket": "khat-dacb2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:281027583126:android:f69d272f8873f33f05b6b7",
+        "android_client_info": {
+          "package_name": "com.sodikdev.khatapps"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7defm-gy7RUvBUb87gU2JPUEKVTL2tKY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
