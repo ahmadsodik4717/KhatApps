@@ -111,4 +111,7 @@ dependencies {
 
     //SYSTEM UI
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.23.1")
+
+    implementation ("com.google.mlkit:text-recognition:16.0.0")
+
 }

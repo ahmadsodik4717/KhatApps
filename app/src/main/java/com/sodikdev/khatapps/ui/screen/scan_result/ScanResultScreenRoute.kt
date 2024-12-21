@@ -9,10 +9,13 @@ import com.sodikdev.khatapps.ui.navigation.Screen
 fun NavGraphBuilder.scanResultScreenRoute(navController: NavController) {
     composable(route = Screen.ScanResult.route) {
         val imageUri = navController.previousBackStackEntry?.savedStateHandle?.get<Uri>("image_uri")
+        val recognizedText = navController.previousBackStackEntry?.savedStateHandle?.get<String>("recognized_text") ?: ""
+
         if(imageUri != null) {
             ScanResultScreen(
                 navController = navController,
-                imageUri = imageUri
+                imageUri = imageUri,
+                recognizedText = recognizedText
             )
         }
     }

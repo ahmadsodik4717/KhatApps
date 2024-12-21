@@ -8,7 +8,8 @@ data class HomeState(
     val loadingMessage: String? = null,
     val loadingProgress: String? = null,
     val isError: Boolean = false,
-    val errorMessage: String? = null,
     val classifyResult: List<Khat?> = emptyList(),
     val imageUri: Uri? = null,
+    val recognizedText: String = "",
+    val errorMessage: String? = null
 )

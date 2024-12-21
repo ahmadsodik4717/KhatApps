@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.update
 import java.io.File
 import javax.inject.Inject
 import com.sodikdev.khatapps.util.Result
+import com.sodikdev.khatapps.util.TextRecognitionUtil
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -19,27 +20,32 @@ class HomeViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
+    private val textRecognitionUtil = TextRecognitionUtil()
     private val _state = MutableStateFlow(HomeState())
     val state = _state.asStateFlow()
     private var classifyJob: Job? = null
 
     fun onEvent(event: HomeEvent) {
         when (event) {
-            is HomeEvent.OnScanUpload -> classify(event.photoFile, event.photoUri)
+            is HomeEvent.OnScanUpload -> {
+                classify(event.photoFile, event.photoUri)
+                viewModelScope.launch {
+                    val recognizedText = textRecognitionUtil.recognizeText(event.context, event.photoUri)
+                    _state.update { it.copy(
+                        recognizedText = recognizedText
+                    )}
+                }
+            }
             is HomeEvent.ResetState -> _state.update {
                 HomeState()
             }
             is HomeEvent.OnSaveImageUri -> _state.update {
-                it.copy(
-                    imageUri = event.imageUri
-                )
+                it.copy(imageUri = event.imageUri)
             }
             is HomeEvent.OnCancelClassify -> {
                 classifyJob?.cancel()
                 _state.update {
-                    it.copy(
-                        isLoading = false
-                    )
+                    it.copy(isLoading = false)
                 }
             }
         }
@@ -72,7 +78,7 @@ class HomeViewModel @Inject constructor(
                             it.copy(
                                 isLoading = false,
                                 loadingMessage = null,
-                                isError = true,
+                                isError = false,
                                 errorMessage = null,
                                 loadingProgress = null,
                                 classifyResult = result.data

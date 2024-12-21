@@ -2,6 +2,7 @@ package com.sodikdev.khatapps.util
 
 import android.content.Context
 import android.net.Uri
+import android.os.Environment
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -11,12 +12,14 @@ import java.util.Locale
 
 fun Context.createImageFile(): File {
     val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-    val imageFileName = "JPEG_" + timeStamp + "_"
+    val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
     return File.createTempFile(
-        imageFileName,
+        "JPEG_${timeStamp}_",
         ".jpg",
-        externalCacheDir
-    )
+        storageDir
+    ).apply {
+        createNewFile()
+    }
 }
 
 

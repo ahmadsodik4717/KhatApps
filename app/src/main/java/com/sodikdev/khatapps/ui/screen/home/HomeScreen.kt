@@ -25,8 +25,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -85,7 +88,8 @@ fun HomeScreen(
             navController.currentBackStackEntry?.savedStateHandle?.set("image_uri", state.imageUri)
             Log.d("IMAGE", "ScanScreen: ${state.imageUri}")
             navController.navigate(Screen.ScanResult.route)
-        }
+        },
+        viewModel = viewModel
     )
 
 }
@@ -95,8 +99,21 @@ fun HomeContent(
     modifier: Modifier = Modifier,
     imageUri: Uri?,
     onImageSelected: (File, Uri) -> Unit,
-    uploadImage: (Uri) -> Unit
+    uploadImage: (Uri) -> Unit,
+    viewModel: HomeViewModel
 ) {
+    var currentPhotoUri: Uri? by remember { mutableStateOf(null) }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    val file = remember { context.createImageFile() }
+    val uri = remember {
+        FileProvider.getUriForFile(
+            context,
+            "${BuildConfig.APPLICATION_ID}.provider",
+            file
+        )
+    }
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -105,17 +122,6 @@ fun HomeContent(
             .fillMaxSize()
             .padding(horizontal = 16.dp, vertical = 24.dp)
     ) {
-
-        val context = LocalContext.current
-        val scope = rememberCoroutineScope()
-
-        val file = context.createImageFile()
-
-        val uri = FileProvider.getUriForFile(
-            context,
-            BuildConfig.APPLICATION_ID + ".provider",
-            file
-        )
 
         Log.d("GAMBAR", "HomeContent: $uri")
 
@@ -219,6 +225,7 @@ fun HomeContent(
         OutlinedButton(
             onClick = {
                 if (imageUri != null) {
+                    viewModel.onEvent(HomeEvent.OnScanUpload(file, imageUri, context))
                     uploadImage(imageUri)
                 }
             },
