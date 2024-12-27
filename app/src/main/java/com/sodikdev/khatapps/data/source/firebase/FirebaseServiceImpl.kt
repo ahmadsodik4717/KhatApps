@@ -16,7 +16,7 @@ class FirebaseServiceImpl @Inject constructor(
     private val storage: FirebaseStorage
 ) : FirebaseService {
     override suspend fun getDiseaseById(khatId: String): Khat? {
-        return firestore.collection("diseases")
+        return firestore.collection("khat")
             .document(khatId)
             .get()
             .await()

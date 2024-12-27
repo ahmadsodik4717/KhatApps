@@ -9,5 +9,6 @@ data class Khat(
     val images: List<String> = emptyList(),
     val name: String = "",
     val description: String = "",
+    val author : String = "",
     val confidence: Double = 0.0
 ): Parcelable

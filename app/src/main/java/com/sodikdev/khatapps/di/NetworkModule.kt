@@ -45,7 +45,7 @@ object NetworkModule {
     @Singleton
     fun provideApiService(client: OkHttpClient): ApiService {
         return Retrofit.Builder()
-            .baseUrl("https:www.google.com")
+            .baseUrl("https://khat-630344238886.us-east4.run.app")
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()

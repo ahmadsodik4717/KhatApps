@@ -7,6 +7,6 @@ import com.sodikdev.khatapps.ui.navigation.Screen
 
 fun NavGraphBuilder.historyScreenRoute(navController: NavController) {
     composable(route = Screen.History.route) {
-        HistoryScreen(navController)
+        HistoryScreen(navController = navController)
     }
 }

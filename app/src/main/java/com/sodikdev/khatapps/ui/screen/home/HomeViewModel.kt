@@ -1,6 +1,7 @@
 package com.sodikdev.khatapps.ui.screen.home
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sodikdev.khatapps.data.repository.UserRepository
@@ -13,6 +14,7 @@ import java.io.File
 import javax.inject.Inject
 import com.sodikdev.khatapps.util.Result
 import com.sodikdev.khatapps.util.TextRecognitionUtil
+import com.sodikdev.khatapps.util.detectKhat
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -28,12 +30,23 @@ class HomeViewModel @Inject constructor(
     fun onEvent(event: HomeEvent) {
         when (event) {
             is HomeEvent.OnScanUpload -> {
-                classify(event.photoFile, event.photoUri)
+                _state.update {
+                    it.copy(
+                        isLoading = true
+                    )
+                }
+//                classify(event.photoFile, event.photoUri)
                 viewModelScope.launch {
-                    val recognizedText = textRecognitionUtil.recognizeText(event.context, event.photoUri)
-                    _state.update { it.copy(
-                        recognizedText = recognizedText
-                    )}
+                    try {
+                        val recognizedText = detectKhat(event.context, event.photoUri)
+                        _state.update { it.copy(
+                            detectionResult = recognizedText,
+                            isLoading = false,
+                            isSuccess = true
+                        )}
+                    } catch (e: Exception) {
+                        Log.d("URI_ERROR", "onEvent: ${e.message}")
+                    }
                 }
             }
             is HomeEvent.ResetState -> _state.update {

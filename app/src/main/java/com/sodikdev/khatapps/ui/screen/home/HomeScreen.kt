@@ -1,6 +1,7 @@
 package com.sodikdev.khatapps.ui.screen.home
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
@@ -25,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -44,20 +46,32 @@ import com.sodikdev.khatapps.BuildConfig
 import com.sodikdev.khatapps.ui.navigation.Screen
 import com.sodikdev.khatapps.util.createImageFile
 import com.sodikdev.khatapps.util.toFile
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
+//    Log.d("TEST_LOG", "HomeScreen: ${state.recognizedText}")
 
     state.errorMessage?.let {
         Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+    }
+
+    LaunchedEffect(state.isLoading, state.isSuccess) {
+        if (!state.isLoading && state.isSuccess) {
+            navController.currentBackStackEntry?.savedStateHandle?.set("image_uri", state.imageUri)
+            navController.currentBackStackEntry?.savedStateHandle?.set("result", state.detectionResult)
+            Log.d("IMAGE", "ScanScreen: ${state.imageUri}")
+            navController.navigate(Screen.ScanResult.route)
+            viewModel.onEvent(HomeEvent.ResetState)
+        }
     }
 
 //    if (state.classifyResult.isNotEmpty()) {
@@ -66,10 +80,11 @@ fun HomeScreen(
 //                "result",
 //                state.classifyResult
 //            )
+//            Log.d("CLASSIFY", "ScanScreen: ${state.classifyResult}")
 //            navController.currentBackStackEntry?.savedStateHandle?.set("image_uri", state.imageUri)
 //            Log.d("IMAGE", "ScanScreen: ${state.imageUri}")
 //            navController.navigate(Screen.ScanResult)
-////            viewModel.onEvent(HomeEvent.ResetState)
+//            viewModel.onEvent(HomeEvent.ResetState)
 //        }
 //    }
 
@@ -77,19 +92,11 @@ fun HomeScreen(
         imageUri = state.imageUri,
         onImageSelected = { file, uri ->
             viewModel.onEvent(HomeEvent.OnSaveImageUri(uri))
-            val imageFile = file
-//            if (imageFile != null) {
-//                viewModel.onEvent(HomeEvent.OnScanUpload(imageFile, uri))
-//            } else {
-//                Toast.makeText(context, "Gagal memproses gambar!", Toast.LENGTH_SHORT).show()
-//            }
         },
-        uploadImage = {
-            navController.currentBackStackEntry?.savedStateHandle?.set("image_uri", state.imageUri)
-            Log.d("IMAGE", "ScanScreen: ${state.imageUri}")
-            navController.navigate(Screen.ScanResult.route)
+        uploadImage = { file, uri ->
+
+               viewModel.onEvent(HomeEvent.OnScanUpload(file, uri, context))
         },
-        viewModel = viewModel
     )
 
 }
@@ -99,8 +106,7 @@ fun HomeContent(
     modifier: Modifier = Modifier,
     imageUri: Uri?,
     onImageSelected: (File, Uri) -> Unit,
-    uploadImage: (Uri) -> Unit,
-    viewModel: HomeViewModel
+    uploadImage: (photoFile: File, photoUri: Uri) -> Unit,
 ) {
     var currentPhotoUri: Uri? by remember { mutableStateOf(null) }
     val context = LocalContext.current
@@ -225,8 +231,7 @@ fun HomeContent(
         OutlinedButton(
             onClick = {
                 if (imageUri != null) {
-                    viewModel.onEvent(HomeEvent.OnScanUpload(file, imageUri, context))
-                    uploadImage(imageUri)
+                    uploadImage(file, imageUri)
                 }
             },
             enabled = imageUri != null,

@@ -44,6 +44,7 @@ android {
     buildFeatures {
         buildConfig = true
         compose = true
+        mlModelBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"
@@ -76,6 +77,10 @@ dependencies {
 
     //LIFECYCLE COMPOSE
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.2")
+    implementation(libs.tensorflow.lite.support)
+    implementation(libs.tensorflow.lite.metadata)
+    implementation(libs.tensorflow.lite.gpu)
+//    implementation(libs.play.services.mlkit.text.recognition.common)
 
     //TESTING
     testImplementation("junit:junit:4.13.2")
@@ -113,5 +118,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.23.1")
 
     implementation ("com.google.mlkit:text-recognition:16.0.0")
+//    implementation ("com.google.mlkit:text-recognition-arabic:16.0.1")
+//    implementation("com.google.mlkit:text-recognition-chinese:16.0.1")
 
 }

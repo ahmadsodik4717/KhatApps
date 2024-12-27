@@ -8,7 +8,7 @@ import retrofit2.http.Part
 
 interface ApiService {
     @Multipart
-    @POST("/detection")
+    @POST("/detect")
     suspend fun scanKhat(
         @Part file: MultipartBody.Part?
     ): KhatResponse
