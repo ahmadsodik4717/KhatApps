@@ -15,16 +15,23 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CameraAlt
 import androidx.compose.material.icons.rounded.Photo
 import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -35,6 +42,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -43,6 +51,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.sodikdev.khatapps.BuildConfig
+import com.sodikdev.khatapps.R
 import com.sodikdev.khatapps.ui.navigation.Screen
 import com.sodikdev.khatapps.util.createImageFile
 import com.sodikdev.khatapps.util.toFile
@@ -51,11 +60,37 @@ import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.time.Duration.Companion.seconds
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        // Gambar
+        Icon(
+            painter = painterResource(id = R.drawable.logoblack3),
+            contentDescription = "App Logo",
+            modifier = Modifier.size(42.dp)
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        // Teks
+        Text(
+            text = "Welcome to KhatScan",
+            style = MaterialTheme.typography.titleMedium
+        )
+    }
+
+
+
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
 //    Log.d("TEST_LOG", "HomeScreen: ${state.recognizedText}")
@@ -87,7 +122,6 @@ fun HomeScreen(
 //            viewModel.onEvent(HomeEvent.ResetState)
 //        }
 //    }
-
     HomeContent(
         imageUri = state.imageUri,
         onImageSelected = { file, uri ->
@@ -200,7 +234,7 @@ fun HomeContent(
                 )
             }
 
-            ElevatedButton(
+            OutlinedButton(
                 onClick = {
                     val checkSelfPermission = ContextCompat.checkSelfPermission(
                         context,

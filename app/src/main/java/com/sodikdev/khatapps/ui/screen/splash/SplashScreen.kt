@@ -18,37 +18,51 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.sodikdev.khatapps.R
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun SplashScreen(onTimeOut: () -> Unit) {
     val currentOnTimeOut by rememberUpdatedState(onTimeOut)
+    val isDarkTheme = androidx.compose.foundation.isSystemInDarkTheme()
+
+    // Timer untuk splash screen
     LaunchedEffect(currentOnTimeOut) {
-        delay(2.5.seconds)
-        onTimeOut()
+        delay(2.seconds)
+        currentOnTimeOut()
     }
 
+    // Menentukan logo berdasarkan tema
+    val logo = if (isDarkTheme) {
+        R.drawable.logowhite3 // Logo terang untuk mode gelap
+    } else {
+        R.drawable.logoblack3 // Logo gelap untuk mode terang
+    }
+
+    // Tampilan utama splash screen
     Box(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxSize(), // Mengisi seluruh layar
+        contentAlignment = Alignment.Center // Semua isi Box berada di tengah
     ) {
         Column(
-            modifier = Modifier.align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-//            Image(
-//                painter = painterResource(id = R.drawable.ic_splash),
-//                contentDescription = null,
-//                modifier = Modifier.size(200.dp)
-//            )
-            Spacer(modifier = Modifier.height(16.dp))
+            // Logo aplikasi
+            Image(
+                painter = painterResource(id = logo),
+                contentDescription = "Logo Splash Screen",
+                modifier = Modifier.size(200.dp) // Ukuran logo
+            )
+
+            /*// Teks di bawah logo
             Text(
                 text = "KHAT SCAN",
                 style = MaterialTheme.typography.headlineLarge.copy(
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Bold
                 )
-            )
+            )*/
         }
     }
 }

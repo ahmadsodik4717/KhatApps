@@ -1,12 +1,17 @@
 package com.sodikdev.khatapps.ui.screen.about
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,31 +35,70 @@ fun AboutScreen(
 
 @Composable
 fun AboutContent(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isDarkTheme: Boolean = isSystemInDarkTheme()
 ) {
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.photo_profile),
-            contentDescription = "",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(160.dp)
-                .clip(CircleShape)
+
+        val logo = if (isDarkTheme) {
+            R.drawable.logowhite3 // Logo terang untuk mode gelap
+        } else {
+            R.drawable.logoblack3 // Logo gelap untuk mode terang
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically, // Vertikal di tengah
+            horizontalArrangement = Arrangement.spacedBy(16.dp), // Spasi antara gambar dan teks
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            // Gambar
+            Image(
+                painter = painterResource(id = logo),
+                contentDescription = "",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(180.dp) // Ukuran gambar yang lebih kecil agar seimbang dengan teks
+                    .clip(CircleShape)
+            )
+            // Teks
+            Column(
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = "Nama Pembuat",
+                    fontWeight = FontWeight.Bold
+                )
+                Text(text = "Ahmad Sodik")
+
+                Text(
+                    text = "Jurusan",
+                    fontWeight = FontWeight.Bold
+                )
+                Text(text = "Teknik Informatika")
+
+                Text(
+                    text = "Universitas",
+                    fontWeight = FontWeight.Bold
+                )
+                Text(text = "Universitas Sains Al-Qur'an")
+            }
+        }
+        Text(text = "Deskripsi",
+            fontWeight = FontWeight.Bold
         )
-        Text(text = "Nama Pembuat")
-        Text(text = "Ahmad Sodik")
-        Text(text = "Jurusan")
-        Text(text = "Teknik Informatika")
-        Text(text = "Universitas")
-        Text(text = "Universitas Sains Al-Qur'an")
-        Text(text = "Deskripsi")
-        Text(text = "KhatApps adalah aplikasi Android yang memanfaatkan algoritma Convolutional Neural Network (CNN) untuk mengenali tiga jenis khat kaligrafi populer: Naskhi, Diwani, dan Tsuluts. Aplikasi ini dirancang untuk membantu pengguna, baik pemula maupun ahli, dalam mengidentifikasi jenis khat secara cepat dan akurat melalui fitur unggah gambar atau kamera langsung. Dengan antarmuka yang sederhana, KhatApps menjadi alat edukatif yang ideal untuk pembelajaran, penelitian, dan eksplorasi seni kaligrafi Islam.",
+        Text(text = "KhatScan adalah aplikasi Android yang memanfaatkan" +
+                " algoritma Convolutional Neural Network (CNN) " +
+                "untuk mengenali tiga jenis khat kaligrafi: Naskhi, Diwani, dan Tsuluts. " +
+                "Aplikasi ini dirancang untuk membantu pengguna, baik pemula maupun ahli, " +
+                "dalam mengidentifikasi jenis khat secara cepat dan akurat " +
+                "melalui fitur unggah gambar atau kamera langsung Dengan antarmuka yang sederhana.",
             textAlign = TextAlign.Justify)
     }
 

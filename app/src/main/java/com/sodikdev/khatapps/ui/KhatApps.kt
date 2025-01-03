@@ -1,10 +1,7 @@
 package com.sodikdev.khatapps.ui
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.History
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Info
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -14,12 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.get
+import com.sodikdev.khatapps.R
 import com.sodikdev.khatapps.ui.navigation.Screen
 import com.sodikdev.khatapps.ui.navigation.bottom_navigation.BottomNavItem
 
@@ -58,21 +58,32 @@ fun BottomBar(
     modifier: Modifier = Modifier,
 ) {
     val items = listOf(
-        BottomNavItem(
+        /*BottomNavItem(
             title = "Home",
             icon = Icons.Rounded.Home,
             screen = Screen.Home,
-        ),
+        ),*/
         BottomNavItem(
+            title = "Home",
+            icon = painterResource(id = R.drawable.home_svgrepo_com), // Ganti dengan gambar drawable
+            screen = Screen.Home,
+        ),
+        /*BottomNavItem(
             title = "Catatan",
             icon = Icons.Rounded.History,
             screen = Screen.History,
-        ),
+        ),*/
         BottomNavItem(
+            title = "Stock",
+            icon = painterResource(id = R.drawable.info_circle_svgrepo_com), // Ganti dengan gambar drawable
+            screen = Screen.About,
+        )
+        /*BottomNavItem(
             title = "Stock",
             icon = Icons.Rounded.Info,
             screen = Screen.About,
-        )
+        )*/
+
     )
     NavigationBar(
         modifier = modifier,
@@ -91,8 +102,9 @@ fun BottomBar(
                 },
                 icon = {
                     Icon(
-                        imageVector = item.icon,
-                        contentDescription = null
+                        painter = item.icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(

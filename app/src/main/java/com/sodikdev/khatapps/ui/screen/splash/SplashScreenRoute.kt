@@ -15,6 +15,7 @@ fun NavGraphBuilder.splashScreenRoute(navController: NavController) {
                     popUpTo(Screen.Splash.route) {
                         inclusive = true
                     }
+                    launchSingleTop = true
                 }
             }
         )

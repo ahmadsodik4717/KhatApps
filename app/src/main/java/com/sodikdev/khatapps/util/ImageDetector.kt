@@ -8,8 +8,10 @@ import android.net.Uri
 import android.os.Build
 import android.os.Parcelable
 import android.provider.MediaStore
+import com.google.firebase.firestore.FirebaseFirestore
 import com.sodikdev.khatapps.ml.Model
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.tensorflow.lite.DataType
@@ -50,12 +52,46 @@ suspend fun detectKhat(context: Context, uri: Uri): DetectResult? {
         val maxIndex = confidences.indices.maxByOrNull { confidences[it] } ?: -1
         val confidence = if (maxIndex != -1) confidences[maxIndex] else 0.0f
 
+        // Mengonversi nilai confidence menjadi persentase
+        val confidencePercentage = (confidence * 100).toInt()
+
+/*        if (confidence < 0.85f) {
+            return DetectResult(
+                diseaseName = "Bukan Khat",
+                confidence = confidence,
+                author = "Tidak Terdeteksi",
+                description = "Gambar yang anda masukkan bukan merupakan gambar Khat. Silahkan coba dengan gambar Khat yang valid.",
+                detectionTime = System.currentTimeMillis()
+            )
+        }*/
+
         // Step 6: Map the index to a label (ensure labels match your model's classes)
         val labels = listOf("Diwani", "Naskh", "Thuluth")
         val diseaseName = if (maxIndex >= 0 && maxIndex < labels.size) labels[maxIndex] else "Unknown"
 
+        // Fetch Firestore data
+        val documentId = diseaseName.lowercase()
+
+        val db = FirebaseFirestore.getInstance()
+        val khat = db.collection("khat")
+            .document(documentId)
+            .get()
+            .await()
+
         // Step 7: Return the result with actual confidence score
-        DetectResult(diseaseName = diseaseName, confidence = confidence)
+        /*DetectResult(
+            diseaseName = diseaseName,
+            author = khat?.getString("author") ?: "Unknown",
+            description = khat?.getString("description") ?: "",
+            confidence = confidence)*/
+
+        DetectResult(
+            diseaseName = diseaseName,
+            author = khat?.getString("author") ?: "Unknown",
+            description = khat?.getString("description") ?: "",
+            confidencePercentage = confidencePercentage.toFloat(), // Menyimpan sebagai persentase
+            detectionTime = System.currentTimeMillis()
+        )
     } catch (e: Exception) {
         null
     } finally {
@@ -67,7 +103,10 @@ suspend fun detectKhat(context: Context, uri: Uri): DetectResult? {
 @Parcelize
 data class DetectResult(
     val diseaseName: String,
-    val confidence: Float,
+   /* val confidence: Float,*/
+    val confidencePercentage: Float,
+    val author: String,
+    val description: String = "",
     val detectionTime: Long = 0,
 ) : Parcelable
 
@@ -98,4 +137,19 @@ private fun validateInput(bitmap: Bitmap): Boolean {
 private fun normalizePixel(pixel: Int): Float {
     return (pixel - 127.5f) / 127.5f
 }
+/*private fun isKhatImage(bitmap: Bitmap): Boolean {
+    // Implementasi basic image validation
+    val darkPixelThreshold = 0.3f
+    var darkPixelCount = 0
+    val totalPixels = bitmap.width * bitmap.height
 
+    for (x in 0 until bitmap.width) {
+        for (y in 0 until bitmap.height) {
+            val pixel = bitmap.getPixel(x, y)
+            val brightness = (Color.red(pixel) + Color.green(pixel) + Color.blue(pixel)) / 765f
+            if (brightness < 0.5f) darkPixelCount++
+        }
+    }
+
+    return darkPixelCount.toFloat() / totalPixels > darkPixelThreshold
+}*/

@@ -20,9 +20,8 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
     ) {
         splashScreenRoute(navController)
         homeScreenRoute(navController)
-        historyScreenRoute(navController)
+       /* historyScreenRoute(navController)*/
         aboutScreenRoute(navController)
-
         scanResultScreenRoute(navController)
     }
 }
